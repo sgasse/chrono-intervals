@@ -1,6 +1,33 @@
+use crate::grouping::Grouping;
 use chrono::{DateTime, Datelike, Duration, FixedOffset, TimeZone, Utc};
 
 pub type TimeIntervalTuple<T> = (DateTime<T>, DateTime<T>);
+
+fn get_initial_begin_end_times_day<T>(
+    begin: DateTime<T>,
+    local_timezone: &FixedOffset,
+    end_precision: Duration,
+    extend_begin: bool,
+) -> (DateTime<FixedOffset>, DateTime<FixedOffset>)
+where
+    T: TimeZone,
+{
+    let init_begin = match extend_begin {
+        true => begin.with_timezone(local_timezone).date().and_hms(0, 0, 0),
+        false => begin.with_timezone(local_timezone).date().and_hms(0, 0, 0) + Duration::hours(24),
+    };
+    let init_end = init_begin + Duration::hours(24) - end_precision;
+    (init_begin, init_end)
+}
+
+fn get_next_begin_end_times_day(
+    cur_begin: DateTime<FixedOffset>,
+    end_precision: Duration,
+) -> (DateTime<FixedOffset>, DateTime<FixedOffset>) {
+    let cur_begin = cur_begin + Duration::hours(24);
+    let cur_end = cur_begin + Duration::hours(24) - end_precision;
+    (cur_begin, cur_end)
+}
 
 fn get_intervals_per_day<T, U>(
     begin: DateTime<T>,
@@ -15,30 +42,14 @@ where
     T: TimeZone,
     U: TimeZone,
 {
-    let tz = local_timezone;
-
     let mut intervals = Vec::new();
-    let (mut cur_begin, mut cur_end) = match extend_begin {
-        true => {
-            let cur_begin = begin.with_timezone(tz).date().and_hms(0, 0, 0);
-            let cur_end = cur_begin + Duration::hours(24) - end_precision;
-            (cur_begin, cur_end)
-        }
-        false => {
-            let begin_date = begin.date();
-            let cur_begin = tz
-                .ymd(begin_date.year(), begin_date.month(), begin_date.day() + 1)
-                .and_hms(0, 0, 0);
-            let cur_end = cur_begin + Duration::hours(24) - end_precision;
-            (cur_begin, cur_end)
-        }
-    };
+    let (mut cur_begin, mut cur_end) =
+        get_initial_begin_end_times_day(begin, local_timezone, end_precision, extend_begin);
 
     while cur_end < end {
         intervals.push((cur_begin, cur_end));
 
-        cur_begin = cur_begin + Duration::hours(24);
-        cur_end = cur_begin + Duration::hours(24) - end_precision;
+        (cur_begin, cur_end) = get_next_begin_end_times_day(cur_begin, end_precision);
     }
 
     if extend_end {
