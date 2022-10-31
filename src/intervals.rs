@@ -1,9 +1,29 @@
-use crate::grouping::Grouping;
-use chrono::{DateTime, Datelike, Duration, FixedOffset, TimeZone};
+use crate::{grouping::Grouping, TimeIntervalTuple};
+use chrono::{DateTime, Datelike, Duration, FixedOffset, TimeZone, Utc};
 
-pub type TimeIntervalTuple<T> = (DateTime<T>, DateTime<T>);
+pub fn get_extended_utc_intervals_with_defaults<T>(
+    begin: DateTime<T>,
+    end: DateTime<T>,
+    grouping: &Grouping,
+    offset_west_seconds: i32,
+) -> Vec<TimeIntervalTuple<Utc>>
+where
+    T: TimeZone,
+{
+    let local_timezone = &FixedOffset::west(offset_west_seconds);
+    get_intervals_impl(
+        begin,
+        end,
+        grouping,
+        Duration::milliseconds(1),
+        local_timezone,
+        &Utc,
+        true,
+        true,
+    )
+}
 
-fn get_intervals<T, U>(
+fn get_intervals_impl<T, U>(
     begin: DateTime<T>,
     end: DateTime<T>,
     grouping: &Grouping,
@@ -163,22 +183,34 @@ where
 
 #[cfg(test)]
 mod test {
-    use crate::Error;
+    use super::{get_extended_utc_intervals_with_defaults, get_intervals_impl};
+    use crate::{grouping::Grouping, Error};
     use chrono::{DateTime, Duration, FixedOffset, Utc};
 
-    use super::get_intervals;
+    #[test]
+    fn test_get_extended_utc_intervals_with_defaults() -> Result<(), Error> {
+        // Regular case
+        let begin = DateTime::parse_from_rfc3339("2022-10-29T08:23:45.000000Z")?;
+        let end = DateTime::parse_from_rfc3339("2022-11-01T08:23:45.000000Z")?;
+
+        let intervals =
+            get_extended_utc_intervals_with_defaults(begin, end, &Grouping::PerMonth, -7200);
+        dbg!(intervals);
+
+        Ok(())
+    }
 
     #[test]
-    fn test_get_intervals_per_day() -> Result<(), Error> {
+    fn test_get_intervals_impl() -> Result<(), Error> {
         // Regular case
         let begin = DateTime::parse_from_rfc3339("2022-10-29T08:23:45.000000Z")?;
         let end = DateTime::parse_from_rfc3339("2022-11-01T08:23:45.000000Z")?;
 
         let local_timezone = FixedOffset::west(-7200);
-        let intervals = get_intervals(
+        let intervals = get_intervals_impl(
             begin,
             end,
-            &crate::grouping::Grouping::PerMonth,
+            &Grouping::PerMonth,
             Duration::microseconds(1),
             &local_timezone,
             &Utc,
