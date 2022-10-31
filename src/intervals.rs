@@ -1,6 +1,17 @@
+//! Time interval computations.
 use crate::{grouping::Grouping, TimeIntervalTuple};
 use chrono::{DateTime, Datelike, Duration, FixedOffset, TimeZone, Utc};
 
+/// Get extended time intervals with default options in the UTC timezone.
+///
+/// - Extended means that the first interval starts on the interval boundary
+///   **before** `begin` and the last one ends on the interval boundary
+///   **after** end.
+/// - The default `end_precision` is 1ms, so the interval end is always 1ms
+///   before the next interval boundary.
+/// - Interval boundaries are shifted by `offset_west_seconds`. This allows to
+///   retrieve e.g. daily intervals starting with the days in a specific time
+///   zone.
 pub fn get_extended_utc_intervals_with_defaults<T>(
     begin: DateTime<T>,
     end: DateTime<T>,
