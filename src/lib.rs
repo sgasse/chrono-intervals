@@ -5,7 +5,7 @@ pub mod grouping;
 mod intervals;
 
 use chrono::DateTime;
-pub use intervals::get_extended_utc_intervals_with_defaults;
+pub use intervals::{get_extended_utc_intervals_with_defaults, get_utc_intervals_opts};
 
 /// Error type of the crate.
 pub type Error = Box<dyn std::error::Error>;
