@@ -7,7 +7,7 @@ use boundaries::{
     get_initial_begin_end_times_week, get_next_begin_end_times_day, get_next_begin_end_times_month,
     get_next_begin_end_times_week,
 };
-use chrono::{DateTime, Datelike, Duration, FixedOffset, TimeZone, Utc};
+use chrono::{DateTime, Duration, FixedOffset, TimeZone};
 
 pub fn get_intervals_impl<T, U>(
     begin: DateTime<T>,
