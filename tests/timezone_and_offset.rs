@@ -72,3 +72,67 @@ fn test_pdt_begin_end_to_utc() -> Result<(), Error> {
 
     Ok(())
 }
+
+#[test]
+fn test_cest_offset_days() -> Result<(), Error> {
+    // We want to obtain daily intervals for days in CEST instead of in UTC.
+    let begin = DateTime::parse_from_rfc3339("2022-09-25T10:23:45.000000+02:00")?;
+    let end = DateTime::parse_from_rfc3339("2022-09-26T10:23:45.000000+02:00")?;
+
+    // CEST is 2h ahead of UTC (towards the **east**), thus the
+    // `offset_west_seconds` are -2*3600
+    let cest_offset_west_seconds = -2 * 3600;
+
+    let daily_intervals = get_extended_utc_intervals_with_defaults(
+        begin,
+        end,
+        &Grouping::PerDay,
+        cest_offset_west_seconds,
+    );
+    // In UTC, we expect the intervals to start 2h ahead of the day boundary.
+    let expected_intervals = vec![
+        (
+            Utc.ymd(2022, 9, 24).and_hms(22, 0, 0),
+            Utc.ymd(2022, 9, 25).and_hms_milli(21, 59, 59, 999),
+        ),
+        (
+            Utc.ymd(2022, 9, 25).and_hms(22, 0, 0),
+            Utc.ymd(2022, 9, 26).and_hms_milli(21, 59, 59, 999),
+        ),
+    ];
+    assert_eq!(daily_intervals, expected_intervals);
+
+    Ok(())
+}
+
+#[test]
+fn test_pdt_offset_days() -> Result<(), Error> {
+    // We want to obtain daily intervals for days in PDT instead of in UTC.
+    let begin = DateTime::parse_from_rfc3339("2022-09-25T12:23:45.000000-07:00")?;
+    let end = DateTime::parse_from_rfc3339("2022-09-26T12:23:45.000000-07:00")?;
+
+    // PDT is 7h behind of UTC (towards the **west**), thus the
+    // `offset_west_seconds` are 7*3600
+    let cest_offset_west_seconds = 7 * 3600;
+
+    let daily_intervals = get_extended_utc_intervals_with_defaults(
+        begin,
+        end,
+        &Grouping::PerDay,
+        cest_offset_west_seconds,
+    );
+    // In UTC, we expect the intervals to start 7h after the day boundary.
+    let expected_intervals = vec![
+        (
+            Utc.ymd(2022, 9, 25).and_hms(7, 0, 0),
+            Utc.ymd(2022, 9, 26).and_hms_milli(6, 59, 59, 999),
+        ),
+        (
+            Utc.ymd(2022, 9, 26).and_hms(7, 0, 0),
+            Utc.ymd(2022, 9, 27).and_hms_milli(6, 59, 59, 999),
+        ),
+    ];
+    assert_eq!(daily_intervals, expected_intervals);
+
+    Ok(())
+}
