@@ -10,6 +10,7 @@ use chrono::{DateTime, Duration, FixedOffset, TimeZone};
 
 use crate::{grouping::Grouping, TimeInterval};
 
+#[allow(clippy::too_many_arguments)]
 pub fn get_intervals_impl<T, U>(
     begin: DateTime<T>,
     end: DateTime<T>,
