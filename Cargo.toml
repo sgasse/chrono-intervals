@@ -3,7 +3,7 @@ name = "chrono-intervals"
 description = "Create chrono time intervals as per-day, per-week etc."
 version = "0.2.0"
 edition = "2021"
-license-file = "LICENSE-APACHE"
+license = "MIT/Apache-2.0"
 readme = "README.md"
 repository = "https://github.com/sgasse/chrono-intervals"
 
