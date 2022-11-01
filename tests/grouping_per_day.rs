@@ -55,7 +55,7 @@ fn test_per_day_over_a_year() -> Result<(), Error> {
     let daily_intervals =
         get_extended_utc_intervals_with_defaults(begin, end, &Grouping::PerDay, 0);
     assert_eq!(daily_intervals.len(), 365);
-    for interval in daily_intervals {
+    for interval in daily_intervals.iter() {
         assert_eq!(interval.0.day(), interval.1.day());
         assert_eq!(interval.0.time(), NaiveTime::from_hms(0, 0, 0));
         assert_eq!(
@@ -63,6 +63,8 @@ fn test_per_day_over_a_year() -> Result<(), Error> {
             NaiveTime::from_hms_milli(23, 59, 59, 999)
         );
     }
+    assert_eq!(daily_intervals.first().unwrap().0.year(), 2021);
+    assert_eq!(daily_intervals.last().unwrap().0.year(), 2022);
 
     Ok(())
 }
