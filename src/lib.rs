@@ -1,8 +1,10 @@
 //! # chrono-intervals
 //!
 //! Library to compute time intervals grouped per-day, per week etc.
+mod builder;
 pub mod grouping;
 mod intervals;
+mod intervals_impl;
 
 use chrono::DateTime;
 pub use intervals::{get_extended_utc_intervals_with_defaults, get_utc_intervals_opts};
