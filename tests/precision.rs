@@ -1,5 +1,5 @@
 use chrono::{DateTime, Duration, NaiveTime};
-use chrono_intervals::{get_utc_intervals_opts, grouping::Grouping, Error};
+use chrono_intervals::{get_utc_intervals_opts, Error, Grouping};
 
 #[test]
 fn test_get_utc_intervals_precision_millis() -> Result<(), Error> {

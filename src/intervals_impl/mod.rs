@@ -8,7 +8,7 @@ use boundaries::{
 };
 use chrono::{DateTime, Duration, FixedOffset, TimeZone};
 
-use crate::{grouping::Grouping, TimeIntervalTuple};
+use crate::{grouping::Grouping, TimeInterval};
 
 pub fn get_intervals_impl<T, U>(
     begin: DateTime<T>,
@@ -19,7 +19,7 @@ pub fn get_intervals_impl<T, U>(
     output_timezone: &U,
     extend_begin: bool,
     extend_end: bool,
-) -> Vec<TimeIntervalTuple<U>>
+) -> Vec<TimeInterval<U>>
 where
     T: TimeZone,
     U: TimeZone,

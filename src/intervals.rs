@@ -1,6 +1,6 @@
 use chrono::{DateTime, Duration, FixedOffset, TimeZone, Utc};
 
-use crate::{grouping::Grouping, intervals_impl::get_intervals_impl, TimeIntervalTuple};
+use crate::{grouping::Grouping, intervals_impl::get_intervals_impl, TimeInterval};
 
 /// Get time intervals with options in the UTC timezone.
 ///
@@ -21,7 +21,7 @@ pub fn get_utc_intervals_opts<T>(
     end_precision: Duration,
     extend_begin: bool,
     extend_end: bool,
-) -> Vec<TimeIntervalTuple<Utc>>
+) -> Vec<TimeInterval<Utc>>
 where
     T: TimeZone,
 {
@@ -48,12 +48,12 @@ where
 /// - Interval boundaries are shifted by `offset_west_seconds`. This allows to
 ///   retrieve e.g. daily intervals starting with the days in a specific time
 ///   zone.
-pub fn get_extended_utc_intervals_with_defaults<T>(
+pub fn get_extended_utc_intervals<T>(
     begin: DateTime<T>,
     end: DateTime<T>,
     grouping: &Grouping,
     offset_west_seconds: i32,
-) -> Vec<TimeIntervalTuple<Utc>>
+) -> Vec<TimeInterval<Utc>>
 where
     T: TimeZone,
 {

@@ -1,8 +1,6 @@
 mod common;
 use chrono::{DateTime, Duration};
-use chrono_intervals::{
-    get_extended_utc_intervals_with_defaults, get_utc_intervals_opts, grouping::Grouping, Error,
-};
+use chrono_intervals::{get_extended_utc_intervals, get_utc_intervals_opts, Error, Grouping};
 
 #[test]
 fn test_get_utc_intervals_zero_sized() -> Result<(), Error> {
@@ -10,14 +8,14 @@ fn test_get_utc_intervals_zero_sized() -> Result<(), Error> {
     let begin = DateTime::parse_from_rfc3339("2022-11-29T08:23:45.000000Z")?;
     let end = DateTime::parse_from_rfc3339("2022-10-01T08:23:45.000000Z")?;
     assert_eq!(
-        get_extended_utc_intervals_with_defaults(begin, end, &Grouping::PerDay, 0),
+        get_extended_utc_intervals(begin, end, &Grouping::PerDay, 0),
         vec![]
     );
 
     // `begin` and `end` equal
     let begin_end = DateTime::parse_from_rfc3339("2022-11-29T08:23:45.000000Z")?;
     assert_eq!(
-        get_extended_utc_intervals_with_defaults(begin_end, begin_end, &Grouping::PerDay, 0),
+        get_extended_utc_intervals(begin_end, begin_end, &Grouping::PerDay, 0),
         vec![]
     );
 
@@ -46,8 +44,7 @@ fn test_get_extended_utc_intervals_with_defaults() -> Result<(), Error> {
     let begin = DateTime::parse_from_rfc3339("2022-10-29T08:23:45.000000Z")?;
     let end = DateTime::parse_from_rfc3339("2022-11-01T08:23:45.000000Z")?;
 
-    let intervals =
-        get_extended_utc_intervals_with_defaults(begin, end, &Grouping::PerMonth, -7200);
+    let intervals = get_extended_utc_intervals(begin, end, &Grouping::PerMonth, -7200);
     dbg!(intervals);
 
     Ok(())
