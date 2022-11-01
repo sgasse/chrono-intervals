@@ -1,8 +1,8 @@
 mod common;
 use chrono::{DateTime, Duration, NaiveTime};
-use chrono_intervals::get_extended_utc_intervals_with_defaults;
-use chrono_intervals::get_utc_intervals_opts;
-use chrono_intervals::{grouping::Grouping, Error};
+use chrono_intervals::{
+    get_extended_utc_intervals_with_defaults, get_utc_intervals_opts, grouping::Grouping, Error,
+};
 
 #[test]
 fn test_get_utc_intervals_precision() -> Result<(), Error> {

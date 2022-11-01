@@ -1,5 +1,6 @@
-use crate::{grouping::Grouping, intervals_impl::get_intervals_impl, TimeIntervalTuple};
 use chrono::{DateTime, Duration, FixedOffset, TimeZone, Utc};
+
+use crate::{grouping::Grouping, intervals_impl::get_intervals_impl, TimeIntervalTuple};
 
 /// Get time intervals with options in the UTC timezone.
 ///

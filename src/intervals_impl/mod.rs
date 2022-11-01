@@ -1,13 +1,14 @@
 //! Time interval computations.
 mod boundaries;
 
-use crate::{grouping::Grouping, TimeIntervalTuple};
 use boundaries::{
     get_initial_begin_end_times_day, get_initial_begin_end_times_month,
     get_initial_begin_end_times_week, get_next_begin_end_times_day, get_next_begin_end_times_month,
     get_next_begin_end_times_week,
 };
 use chrono::{DateTime, Duration, FixedOffset, TimeZone};
+
+use crate::{grouping::Grouping, TimeIntervalTuple};
 
 pub fn get_intervals_impl<T, U>(
     begin: DateTime<T>,
