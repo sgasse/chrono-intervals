@@ -1,11 +1,14 @@
 [package]
 name = "chrono-intervals"
 description = "Create chrono time intervals as per-day, per-week etc."
+keywords = ["date", "time", "interval"]
+documentation = "https://docs.rs/chrono-intervals/"
+repository = "https://github.com/sgasse/chrono-intervals"
+homepage = "https://github.com/sgasse/chrono-intervals"
+readme = "README.md"
+license = "MIT/Apache-2.0"
 version = "0.2.0"
 edition = "2021"
-license = "MIT/Apache-2.0"
-readme = "README.md"
-repository = "https://github.com/sgasse/chrono-intervals"
 
 [dependencies]
 chrono = "0.4.22"
