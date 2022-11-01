@@ -106,10 +106,10 @@ fn test_pdt_offset_days() -> Result<(), Error> {
 
     // PDT is 7h behind of UTC (towards the **west**), thus the
     // `offset_west_seconds` are 7*3600
-    let cest_offset_west_seconds = 7 * 3600;
+    let pdt_offset_west_seconds = 7 * 3600;
 
     let daily_intervals =
-        get_extended_utc_intervals(begin, end, &Grouping::PerDay, cest_offset_west_seconds);
+        get_extended_utc_intervals(begin, end, &Grouping::PerDay, pdt_offset_west_seconds);
     // In UTC, we expect the intervals to start 7h after the day boundary.
     let expected_intervals = vec![
         (

@@ -7,22 +7,23 @@ fn test_per_day_regular() -> Result<(), Error> {
     let end = DateTime::parse_from_rfc3339("2022-06-27T08:23:45.000000Z")?;
 
     let daily_intervals = get_extended_utc_intervals(begin, end, &Grouping::PerDay, 0);
-    let expected_intervals = vec![
-        (
-            Utc.ymd(2022, 6, 25).and_hms(0, 0, 0),
-            Utc.ymd(2022, 6, 25).and_hms_milli(23, 59, 59, 999),
-        ),
-        (
-            Utc.ymd(2022, 6, 26).and_hms(0, 0, 0),
-            Utc.ymd(2022, 6, 26).and_hms_milli(23, 59, 59, 999),
-        ),
-        (
-            Utc.ymd(2022, 6, 27).and_hms(0, 0, 0),
-            Utc.ymd(2022, 6, 27).and_hms_milli(23, 59, 59, 999),
-        ),
-    ];
-    dbg!(&daily_intervals);
-    assert_eq!(daily_intervals, expected_intervals);
+    assert_eq!(
+        daily_intervals,
+        vec![
+            (
+                Utc.ymd(2022, 6, 25).and_hms(0, 0, 0),
+                Utc.ymd(2022, 6, 25).and_hms_milli(23, 59, 59, 999),
+            ),
+            (
+                Utc.ymd(2022, 6, 26).and_hms(0, 0, 0),
+                Utc.ymd(2022, 6, 26).and_hms_milli(23, 59, 59, 999),
+            ),
+            (
+                Utc.ymd(2022, 6, 27).and_hms(0, 0, 0),
+                Utc.ymd(2022, 6, 27).and_hms_milli(23, 59, 59, 999),
+            ),
+        ]
+    );
 
     Ok(())
 }
