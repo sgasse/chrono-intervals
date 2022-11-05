@@ -1,12 +1,14 @@
 use chrono::{DateTime, Datelike, NaiveTime, TimeZone, Utc};
-use chrono_intervals::{get_extended_utc_intervals, Error, Grouping};
+use chrono_intervals::{Error, Grouping, IntervalGenerator};
 
 #[test]
 fn test_per_week_regular() -> Result<(), Error> {
     let begin = DateTime::parse_from_rfc3339("2022-10-04T08:23:45.000000Z")?;
     let end = DateTime::parse_from_rfc3339("2022-10-18T08:23:45.000000Z")?;
 
-    let weekly_intervals = get_extended_utc_intervals(begin, end, &Grouping::PerWeek, 0);
+    let weekly_intervals = IntervalGenerator::new()
+        .with_grouping(Grouping::PerWeek)
+        .get_intervals(begin, end);
     let expected_intervals = vec![
         (
             Utc.ymd(2022, 10, 3).and_hms(0, 0, 0),
@@ -31,7 +33,9 @@ fn test_per_week_over_several_months() -> Result<(), Error> {
     let begin = DateTime::parse_from_rfc3339("2022-09-09T08:23:45.000000Z")?;
     let end = DateTime::parse_from_rfc3339("2022-11-09T08:23:45.000000Z")?;
 
-    let weekly_intervals = get_extended_utc_intervals(begin, end, &Grouping::PerWeek, 0);
+    let weekly_intervals = IntervalGenerator::new()
+        .with_grouping(Grouping::PerWeek)
+        .get_intervals(begin, end);
     assert_eq!(weekly_intervals.len(), 10);
     for interval in weekly_intervals {
         assert_eq!(interval.0.weekday(), chrono::Weekday::Mon);
@@ -51,7 +55,9 @@ fn test_per_week_over_a_year() -> Result<(), Error> {
     let begin = DateTime::parse_from_rfc3339("2021-09-09T08:23:45.000000Z")?;
     let end = DateTime::parse_from_rfc3339("2022-09-08T08:23:45.000000Z")?;
 
-    let weekly_intervals = get_extended_utc_intervals(begin, end, &Grouping::PerWeek, 0);
+    let weekly_intervals = IntervalGenerator::new()
+        .with_grouping(Grouping::PerWeek)
+        .get_intervals(begin, end);
     assert_eq!(weekly_intervals.len(), 53);
     for interval in weekly_intervals.iter() {
         assert_eq!(interval.0.weekday(), chrono::Weekday::Mon);

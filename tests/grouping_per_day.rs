@@ -1,12 +1,14 @@
 use chrono::{DateTime, Datelike, NaiveTime, TimeZone, Utc};
-use chrono_intervals::{get_extended_utc_intervals, Error, Grouping};
+use chrono_intervals::{Error, Grouping, IntervalGenerator};
 
 #[test]
 fn test_per_day_regular() -> Result<(), Error> {
     let begin = DateTime::parse_from_rfc3339("2022-06-25T08:23:45.000000Z")?;
     let end = DateTime::parse_from_rfc3339("2022-06-27T08:23:45.000000Z")?;
 
-    let daily_intervals = get_extended_utc_intervals(begin, end, &Grouping::PerDay, 0);
+    let daily_intervals = IntervalGenerator::new()
+        .with_grouping(Grouping::PerDay)
+        .get_intervals(begin, end);
     assert_eq!(
         daily_intervals,
         vec![
@@ -33,7 +35,9 @@ fn test_per_day_over_a_month() -> Result<(), Error> {
     let begin = DateTime::parse_from_rfc3339("2022-06-25T08:23:45.000000Z")?;
     let end = DateTime::parse_from_rfc3339("2022-07-25T08:23:45.000000Z")?;
 
-    let daily_intervals = get_extended_utc_intervals(begin, end, &Grouping::PerDay, 0);
+    let daily_intervals = IntervalGenerator::new()
+        .with_grouping(Grouping::PerDay)
+        .get_intervals(begin, end);
     assert_eq!(daily_intervals.len(), 31);
     for interval in daily_intervals {
         assert_eq!(interval.0.day(), interval.1.day());
@@ -52,7 +56,9 @@ fn test_per_day_over_a_year() -> Result<(), Error> {
     let begin = DateTime::parse_from_rfc3339("2021-06-25T08:23:45.000000Z")?;
     let end = DateTime::parse_from_rfc3339("2022-06-24T08:23:45.000000Z")?;
 
-    let daily_intervals = get_extended_utc_intervals(begin, end, &Grouping::PerDay, 0);
+    let daily_intervals = IntervalGenerator::new()
+        .with_grouping(Grouping::PerDay)
+        .get_intervals(begin, end);
     assert_eq!(daily_intervals.len(), 365);
     for interval in daily_intervals.iter() {
         assert_eq!(interval.0.day(), interval.1.day());
