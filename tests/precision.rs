@@ -1,19 +1,26 @@
 use chrono::{DateTime, Duration, NaiveTime};
-use chrono_intervals::{get_utc_intervals_opts, Error, Grouping};
+use chrono_intervals::{get_utc_intervals_opts, Error, Grouping, IntervalGenerator};
 
 #[test]
 fn test_get_utc_intervals_precision_millis() -> Result<(), Error> {
     let begin = DateTime::parse_from_rfc3339("2022-10-29T08:23:45.000000Z")?;
     let end = DateTime::parse_from_rfc3339("2022-11-01T08:23:45.000000Z")?;
 
-    let with_milli_secs_precision = get_utc_intervals_opts(
-        begin,
-        end,
-        &Grouping::PerDay,
-        0,
-        Duration::milliseconds(1),
-        false,
-        false,
+    let with_milli_secs_precision = IntervalGenerator::new()
+        .without_extended_begin()
+        .without_extended_end()
+        .get_intervals(begin, end);
+    assert_eq!(
+        with_milli_secs_precision,
+        get_utc_intervals_opts(
+            begin,
+            end,
+            &Grouping::PerDay,
+            0,
+            Duration::milliseconds(1),
+            false,
+            false,
+        )
     );
 
     for interval in with_milli_secs_precision {
@@ -33,14 +40,22 @@ fn test_get_utc_intervals_precision_micros() -> Result<(), Error> {
     let end = DateTime::parse_from_rfc3339("2022-11-01T08:23:45.000000Z")?;
 
     // Micro-seconds
-    let with_micro_secs_precision = get_utc_intervals_opts(
-        begin,
-        end,
-        &Grouping::PerDay,
-        0,
-        Duration::microseconds(1),
-        false,
-        false,
+    let with_micro_secs_precision = IntervalGenerator::new()
+        .with_precision(Duration::microseconds(1))
+        .without_extended_begin()
+        .without_extended_end()
+        .get_intervals(begin, end);
+    assert_eq!(
+        with_micro_secs_precision,
+        get_utc_intervals_opts(
+            begin,
+            end,
+            &Grouping::PerDay,
+            0,
+            Duration::microseconds(1),
+            false,
+            false,
+        )
     );
 
     for interval in with_micro_secs_precision {
@@ -60,14 +75,22 @@ fn test_get_utc_intervals_precision_nanos() -> Result<(), Error> {
     let end = DateTime::parse_from_rfc3339("2022-11-01T08:23:45.000000Z")?;
 
     // Nano-seconds
-    let with_nano_secs_precision = get_utc_intervals_opts(
-        begin,
-        end,
-        &Grouping::PerDay,
-        0,
-        Duration::nanoseconds(1),
-        false,
-        false,
+    let with_nano_secs_precision = IntervalGenerator::new()
+        .with_precision(Duration::nanoseconds(1))
+        .without_extended_begin()
+        .without_extended_end()
+        .get_intervals(begin, end);
+    assert_eq!(
+        with_nano_secs_precision,
+        get_utc_intervals_opts(
+            begin,
+            end,
+            &Grouping::PerDay,
+            0,
+            Duration::nanoseconds(1),
+            false,
+            false,
+        )
     );
 
     for interval in with_nano_secs_precision {

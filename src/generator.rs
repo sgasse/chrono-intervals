@@ -48,6 +48,12 @@ impl IntervalGenerator {
         self
     }
 
+    pub fn without_extension(mut self) -> Self {
+        self.extend_begin = false;
+        self.extend_end = false;
+        self
+    }
+
     pub fn get_intervals<T>(&self, begin: DateTime<T>, end: DateTime<T>) -> Vec<TimeInterval<Utc>>
     where
         T: TimeZone,

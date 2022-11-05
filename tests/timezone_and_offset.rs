@@ -1,12 +1,14 @@
 use chrono::{DateTime, TimeZone, Utc};
-use chrono_intervals::{get_extended_utc_intervals, Error, Grouping};
+use chrono_intervals::{Error, Grouping, IntervalGenerator};
 
 #[test]
 fn test_utc_begin_end_to_utc() -> Result<(), Error> {
     let begin = DateTime::parse_from_rfc3339("2022-09-29T08:23:45.000000Z")?;
     let end = DateTime::parse_from_rfc3339("2022-09-30T08:23:45.000000Z")?;
 
-    let daily_intervals = get_extended_utc_intervals(begin, end, &Grouping::PerDay, 0);
+    let daily_intervals = IntervalGenerator::new()
+        .with_grouping(Grouping::PerDay)
+        .get_intervals(begin, end);
     let expected_intervals = vec![
         (
             Utc.ymd(2022, 9, 29).and_hms(0, 0, 0),
@@ -30,7 +32,9 @@ fn test_cest_begin_end_to_utc() -> Result<(), Error> {
     let begin = DateTime::parse_from_rfc3339("2022-09-25T01:23:45.000000+02:00")?;
     let end = DateTime::parse_from_rfc3339("2022-09-26T01:23:45.000000+02:00")?;
 
-    let daily_intervals = get_extended_utc_intervals(begin, end, &Grouping::PerDay, 0);
+    let daily_intervals = IntervalGenerator::new()
+        .with_grouping(Grouping::PerDay)
+        .get_intervals(begin, end);
     let expected_intervals = vec![
         (
             Utc.ymd(2022, 9, 24).and_hms(0, 0, 0),
@@ -54,7 +58,9 @@ fn test_pdt_begin_end_to_utc() -> Result<(), Error> {
     let begin = DateTime::parse_from_rfc3339("2022-09-23T22:23:45.000000-07:00")?;
     let end = DateTime::parse_from_rfc3339("2022-09-24T20:23:45.000000-07:00")?;
 
-    let daily_intervals = get_extended_utc_intervals(begin, end, &Grouping::PerDay, 0);
+    let daily_intervals = IntervalGenerator::new()
+        .with_grouping(Grouping::PerDay)
+        .get_intervals(begin, end);
     let expected_intervals = vec![
         (
             Utc.ymd(2022, 9, 24).and_hms(0, 0, 0),
@@ -80,8 +86,10 @@ fn test_cest_offset_days() -> Result<(), Error> {
     // `offset_west_seconds` are -2*3600
     let cest_offset_west_seconds = -2 * 3600;
 
-    let daily_intervals =
-        get_extended_utc_intervals(begin, end, &Grouping::PerDay, cest_offset_west_seconds);
+    let daily_intervals = IntervalGenerator::new()
+        .with_grouping(Grouping::PerDay)
+        .with_offset_west_secs(cest_offset_west_seconds)
+        .get_intervals(begin, end);
     // In UTC, we expect the intervals to start 2h ahead of the day boundary.
     let expected_intervals = vec![
         (
@@ -108,8 +116,10 @@ fn test_pdt_offset_days() -> Result<(), Error> {
     // `offset_west_seconds` are 7*3600
     let pdt_offset_west_seconds = 7 * 3600;
 
-    let daily_intervals =
-        get_extended_utc_intervals(begin, end, &Grouping::PerDay, pdt_offset_west_seconds);
+    let daily_intervals = IntervalGenerator::new()
+        .with_grouping(Grouping::PerDay)
+        .with_offset_west_secs(pdt_offset_west_seconds)
+        .get_intervals(begin, end);
     // In UTC, we expect the intervals to start 7h after the day boundary.
     let expected_intervals = vec![
         (

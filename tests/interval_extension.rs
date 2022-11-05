@@ -1,5 +1,5 @@
 use chrono::{DateTime, Duration};
-use chrono_intervals::{get_utc_intervals_opts, Error, Grouping};
+use chrono_intervals::{get_utc_intervals_opts, Error, Grouping, IntervalGenerator};
 
 #[test]
 fn test_get_utc_intervals_non_extended() -> Result<(), Error> {
@@ -7,14 +7,20 @@ fn test_get_utc_intervals_non_extended() -> Result<(), Error> {
     let end = DateTime::parse_from_rfc3339("2022-11-01T08:23:45.000000Z")?;
 
     // Check that we get grouped intervals enclosed by `begin` and `end`
-    let non_extended_intervals = get_utc_intervals_opts(
-        begin,
-        end,
-        &Grouping::PerDay,
-        0,
-        Duration::milliseconds(1),
-        false,
-        false,
+    let non_extended_intervals = IntervalGenerator::new()
+        .without_extension()
+        .get_intervals(begin, end);
+    assert_eq!(
+        non_extended_intervals,
+        get_utc_intervals_opts(
+            begin,
+            end,
+            &Grouping::PerDay,
+            0,
+            Duration::milliseconds(1),
+            false,
+            false,
+        )
     );
     assert!(begin < non_extended_intervals.first().unwrap().0);
     assert!(end > non_extended_intervals.last().unwrap().1);
@@ -30,14 +36,20 @@ fn test_get_utc_intervals_begin_extended() -> Result<(), Error> {
 
     // The first interval's beginning should be before `begin`, but `end`
     // should be after the last interval's end
-    let begin_extended_intervals = get_utc_intervals_opts(
-        begin,
-        end,
-        &Grouping::PerDay,
-        0,
-        Duration::milliseconds(1),
-        true,
-        false,
+    let begin_extended_intervals = IntervalGenerator::new()
+        .without_extended_end()
+        .get_intervals(begin, end);
+    assert_eq!(
+        begin_extended_intervals,
+        get_utc_intervals_opts(
+            begin,
+            end,
+            &Grouping::PerDay,
+            0,
+            Duration::milliseconds(1),
+            true,
+            false,
+        )
     );
     assert!(begin > begin_extended_intervals.first().unwrap().0);
     assert!(end > begin_extended_intervals.last().unwrap().1);
@@ -53,14 +65,20 @@ fn test_get_utc_intervals_end_extended() -> Result<(), Error> {
 
     // `begin` should be before the first interval's beginning, but the last
     // interval's end should be after `end`
-    let end_extended_intervals = get_utc_intervals_opts(
-        begin,
-        end,
-        &Grouping::PerDay,
-        0,
-        Duration::milliseconds(1),
-        false,
-        true,
+    let end_extended_intervals = IntervalGenerator::new()
+        .without_extended_begin()
+        .get_intervals(begin, end);
+    assert_eq!(
+        end_extended_intervals,
+        get_utc_intervals_opts(
+            begin,
+            end,
+            &Grouping::PerDay,
+            0,
+            Duration::milliseconds(1),
+            false,
+            true,
+        )
     );
     assert!(begin < end_extended_intervals.first().unwrap().0);
     assert!(end < end_extended_intervals.last().unwrap().1);
@@ -75,14 +93,18 @@ fn test_get_utc_intervals_both_extended() -> Result<(), Error> {
     let end = DateTime::parse_from_rfc3339("2022-11-01T08:23:45.000000Z")?;
 
     // Both `begin` and `end` should be enclosed by the intervals
-    let both_extended_intervals = get_utc_intervals_opts(
-        begin,
-        end,
-        &Grouping::PerDay,
-        0,
-        Duration::milliseconds(1),
-        true,
-        true,
+    let both_extended_intervals = IntervalGenerator::new().get_intervals(begin, end);
+    assert_eq!(
+        both_extended_intervals,
+        get_utc_intervals_opts(
+            begin,
+            end,
+            &Grouping::PerDay,
+            0,
+            Duration::milliseconds(1),
+            true,
+            true,
+        )
     );
     assert!(begin > both_extended_intervals.first().unwrap().0);
     assert!(end < both_extended_intervals.last().unwrap().1);
